@@ -3,11 +3,7 @@ import java.util.Scanner;
 public class HospitalManagememtSystem {
 
     Scanner sc = new Scanner(System.in);
-    DataBase newdata = new DataBase();
-    Admin admin = new Admin();
-    Doctor doc = new Doctor();
 
-   // Patient patient = new Patient();
 
     public void printMainMenu()
     {
@@ -23,11 +19,13 @@ public class HospitalManagememtSystem {
         System.out.println();
         System.out.println("--------------enter doctor menu choices------------------");
         System.out.println("1 to list patient details");
-        System.out.println("2 to list  specific patient ");
-        System.out.println("3 to recommend test");
+        System.out.println("2 to list specific patient ");
+        System.out.println("3 to prescribe test to patient");
         System.out.println("4 to prescribe medicines only after test is prescribed");
         System.out.println("5 to  get prescription");
-        System.out.println("6 to exit");
+        System.out.println("6 to admit patient");
+        System.out.println("7 to see details of admitted patients");
+        System.out.println("8 to exit");
     }
 
     public  void printMenuForAdmin()
@@ -40,6 +38,7 @@ public class HospitalManagememtSystem {
         System.out.println("3:add patient");
         System.out.println("4:list patient");
         System.out.println("5:generate bill");
+      //  System.out.println("6:to allot room to patient(only if patient is admitted by a doctor)");
         System.out.println("6 to exit");
     }
 
@@ -53,12 +52,12 @@ public class HospitalManagememtSystem {
         System.out.println("3. to exit");
     }
 
-    public void adminMenu() {
+    public void adminMenu(Admin admin) {
         int adminChoice = sc.nextInt();
         while (adminChoice < 6) {
             switch (adminChoice) {
                 case 1:
-                    String nAme, dOcId, dept, spec;
+                    String nAme, dOcId, dept, spec,pass;
                     System.out.println("enter name of doctor");
                     nAme = sc.next();
                     System.out.println("enter id");
@@ -67,7 +66,9 @@ public class HospitalManagememtSystem {
                     dept = sc.next();
                     System.out.println("enter specialization");
                     spec = sc.next();
-                    newdata.addToListDoctor(admin.addDoctor(nAme, dOcId, dept, spec));
+                    System.out.println("enter password for doctor");
+                    pass = sc.next();
+                    admin.addDoctor(nAme,dOcId,dept,spec,pass);
                     System.out.println("entered info successfully");
                     printMenuForAdmin();
                     adminChoice = sc.nextInt();
@@ -76,7 +77,7 @@ public class HospitalManagememtSystem {
                     System.out.println("---------------------------------------------------------------------------------------------");
                     System.out.printf("%10s %20s %5s %5s", "NAME", "ID", "DEPARTMENT", "SPECIALIZATION");
                     System.out.println();
-                    admin.listDoctors();
+                    DataBase.listDoctors();
                     printMenuForAdmin();
                     adminChoice = sc.nextInt();
                     break;
@@ -90,7 +91,7 @@ public class HospitalManagememtSystem {
                     dat = sc.next();
                     System.out.println("enter id");
                     pid = sc.next();
-                    newdata.addToListPatient(admin.addPatient(patientName, age, dat, pid));
+                    admin.addPatient(patientName,age,dat,pid);
                     System.out.println("entered info successfully");
                     printMenuForAdmin();
                     adminChoice = sc.nextInt();
@@ -99,14 +100,14 @@ public class HospitalManagememtSystem {
                     System.out.println("----------------------------------------------------------------------------------------------------------------------------------------------");
                     System.out.printf("%10s %20s %5s %5s", "NAME", "ID", "Date", "Age");
                     System.out.println();
-                    admin.listPatients();
+                    DataBase.listPatients();
                     printMenuForAdmin();
                     adminChoice = sc.nextInt();
                     break;
                 case 5:
                     System.out.println("enter the name of patient");
                     String patientNameOnBill = sc.next();
-                    if(newdata.checkIfPatientInDatabase(patientNameOnBill)){
+                    if(DataBase.checkIfPatientInDatabase(patientNameOnBill)){
                     System.out.println("enter bill amount");
                     int amount = sc.nextInt();
                     System.out.println("enter bill ID");
@@ -119,7 +120,7 @@ public class HospitalManagememtSystem {
                     printMenuForAdmin();
                     adminChoice = sc.nextInt();
                     break;
-                default:
+                    default:
                     break;
             }
 
@@ -127,10 +128,10 @@ public class HospitalManagememtSystem {
         }
     }
 
-    public void doctorMenu()
+    public void doctorMenu(Doctor doc)
     {
         int doctorChoice = sc.nextInt();
-        while(doctorChoice<6)
+        while(doctorChoice<8)
         {
             switch (doctorChoice)
             {
@@ -139,16 +140,13 @@ public class HospitalManagememtSystem {
                     System.out.println("----------------------------------------------------------------------------------------------------------------------------------------------");
                     System.out.printf("%10s %20s %5s %5s", "NAME", "ID", "Date", "Age");
                     System.out.println();
-                    admin.listPatients();
+                    DataBase.listPatients();
                     printMenuForDoctorConsole();
                     doctorChoice = sc.nextInt();
                     break;
                 case 2:
                     System.out.println("enter patient name");
                     String nameOfPatient = sc.next();
-                    System.out.println("----------------------------------------------------------------------------------------------------------------------------------------------");
-                    System.out.printf("%10s %20s %5s %5s", "NAME", "ID", "Date", "Age");
-                    System.out.println();
                     doc.showSpecificPatientInfo(nameOfPatient);
                     printMenuForDoctorConsole();
                     doctorChoice = sc.nextInt();
@@ -156,10 +154,30 @@ public class HospitalManagememtSystem {
                 case 3:
                     System.out.println("enter patient name");
                     String nameForPrescription = sc.next();
-                    if(newdata.checkIfPatientInDatabase(nameForPrescription)) {
-                        System.out.println("enter test name ");
-                        String nameOfTest = sc.next();
-                        doc.PrescribePatient(nameForPrescription, nameOfTest);
+                    if(DataBase.checkIfPatientInDatabase(nameForPrescription)) {
+                        System.out.println("enter the number of tests");
+                        int number = sc.nextInt();
+                        String[] testID = new String[number];
+                        int length = testID.length;
+                        int i=0;
+                        System.out.println("enter test ids");
+                        while(i<length)
+                        {
+                            testID[i]=sc.next();
+                            i++;
+                        }
+                        System.out.println("enter the number of medicine");
+                        int numberMeds = sc.nextInt();
+                        String[] medID = new String[numberMeds];
+                        int lengthMed = medID.length;
+                        int j=0;
+                        System.out.println("enter the medicine name");
+                        while(j<lengthMed)
+                        {
+                            medID[j]=sc.next();
+                            j++;
+                        }
+                        doc.PrescribePatient(nameForPrescription,testID,medID);
                     }
                     else
                     {
@@ -168,51 +186,45 @@ public class HospitalManagememtSystem {
                     printMenuForDoctorConsole();
                     doctorChoice = sc.nextInt();
                     break;
-                case 4:
-                    System.out.println("enter patient name");
-                    String nameForMedicines = sc.next();
-                    if(newdata.checkIfPatientInDatabase(nameForMedicines)) {
-                        System.out.println("enter the number of medicines");
-                        int numberOfMeds = sc.nextInt();
-                        System.out.println("enter the name of medicines");
-                        String[] arrOfMeds = new String[numberOfMeds];
-                        for (int i = 0; i < arrOfMeds.length; i++) {
-                            arrOfMeds[i] = sc.next();
-                        }
-                        doc.prescribeMedicines(nameForMedicines, arrOfMeds);
-                        System.out.println("------------------operation completed------------------------");
-                    }
-                    else {
-                        System.out.println("patient does not exist");
-                    }
-                        printMenuForDoctorConsole();
-                        doctorChoice = sc.nextInt();
-                    break;
                 case 5:
                     System.out.println("enter patient name to get prescription");
                     String nameToGetPrescription = sc.next();
-                    doc.getPrescribedMedicines(nameToGetPrescription);
+                    Prescription.printTestAndPrescription(nameToGetPrescription);
                     printMenuForDoctorConsole();
                     doctorChoice = sc.nextInt();
                     break;
-
-
+                case 6:
+                    System.out.println("enter the name of the patient you would like to admit");
+                    String nameToAdmit = sc.next();
+                    System.out.println("enter contact no of patient");
+                    String contactInfo = sc.next();
+                    doc.admitPatient(nameToAdmit,contactInfo);
+                    printMenuForDoctorConsole();
+                    doctorChoice = sc.nextInt();
+                    break;
+                case 7:
+                    System.out.println("----------------------------------------------------------------------------------------------------------------------------------------------");
+                    System.out.printf("%10s %20s %5s %5s %5s", "NAME", "ID", "Date", "Age","Room no");
+                    System.out.println();
+                    DataBase.listAdmittedPatients();
+                    printMenuForDoctorConsole();
+                    doctorChoice = sc.nextInt();
             }
         }
     }
 
-    public void patientMenu(String patientname)
+    public void patientMenu(Patient p)
     {
         int patientChoice = sc.nextInt();
         do {
             switch (patientChoice) {
                 case 1:
-                    Bill.printBill(patientname);
+                    Bill.printBill(p.getName());
                     printMenuForPatient();
                     patientChoice = sc.nextInt();
                     break;
                 case 2:
-                    doc.getPrescribedMedicines(patientname);
+                   Prescription.printTestAndPrescription(p.getName());
                     printMenuForPatient();
                     patientChoice = sc.nextInt();
                     break;
@@ -227,6 +239,9 @@ public class HospitalManagememtSystem {
         sampleData.SampleDoctorList();
         HospitalManagememtSystem hms = new HospitalManagememtSystem();
         sampleData.SamplePatientList();
+        sampleData.sampleRoomList();
+        sampleData.SampleTestList();
+        sampleData.SampleMedicineList();
         Scanner sc = new Scanner(System.in);
         hms.printMainMenu();
         int choice = sc.nextInt();
@@ -238,26 +253,45 @@ public class HospitalManagememtSystem {
                     System.out.println("enter admin password");
                     user.login(sc.next());
                     hms.printMenuForAdmin();
-                    hms.adminMenu();
+                    hms.adminMenu((Admin) user);
                     hms.printMainMenu();
                     choice = sc.nextInt();
                     break;
                 case 2:
-                    User userDoctor = new Doctor();
+                    System.out.println("enter the name of the doctor");
+                    String nameOfDoctorForLogin = sc.next();
+                    User doctor = DataBase.getDoctorFromDataBase(nameOfDoctorForLogin);
                     System.out.println("enter doctor password");
-                    userDoctor.login(sc.next());
+                    try {
+                        doctor.login(sc.next());
+                    }
+                    catch(NullPointerException e)
+                    {
+                        System.out.println("no such account exists");
+                        hms.printMainMenu();
+                        choice = sc.nextInt();
+                        break;
+                    }
                     hms.printMenuForDoctorConsole();
-                    hms.doctorMenu();
+                    hms.doctorMenu((Doctor) doctor);
                     hms.printMainMenu();
                     choice = sc.nextInt();
                     break;
                 case 3:
-                    User userPatient = new Patient();
                     System.out.println("name of patient");
                     String pname = sc.next();
-                    userPatient.login(pname);
+                    User userPatient = DataBase.getPatientFromDatabase(pname);
+                    try {
+                        userPatient.login(pname);
+                    }catch (NullPointerException e)
+                    {
+                        System.out.println("no such patient exists");
+                        hms.printMainMenu();
+                        choice = sc.nextInt();
+                        break;
+                    }
                     hms.printMenuForPatient();
-                    hms.patientMenu(pname);
+                    hms.patientMenu((Patient) userPatient);
                     hms.printMainMenu();
                     choice = sc.nextInt();
                     break;

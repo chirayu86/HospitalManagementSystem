@@ -3,18 +3,18 @@ public class Doctor extends User {
     private String id;
     private String department;
     private String specialization;
+    private String docPassword ;
 
-    private String docPassword = "1234";
 
-    //member functions and overloaded constructor
-    Doctor(String name,String id,String dept,String spec)
+    Doctor(String name,String id,String dept,String spec,String password)
     {
         this.name = name;
         this.id = id;
         this.department = dept;
         this.specialization = spec;
+        this.docPassword = password;
     }
-    public Doctor(){}
+
 
 
     public String getDocName()
@@ -23,11 +23,9 @@ public class Doctor extends User {
     }
     public void showInfoDoctor()
     {
-
         System.out.println("-----------------------------------------------------------------------------");
         System.out.printf("%10s %20s %5s %5s", this.name,this.id,this.department,this.specialization);
         System.out.println();
-
     }
 
 
@@ -43,7 +41,7 @@ public class Doctor extends User {
        }
 
    }
-   public void PrescribePatient(String nameOfPatient,String test)
+   public void PrescribePatient(String nameOfPatient,String[] testsId,String[] medicineName)
    {
        int flag = 0;
        for (Patient P : DataBase.patients)
@@ -51,11 +49,31 @@ public class Doctor extends User {
 
            if(P.getName().equals(nameOfPatient))
            {
-               Prescription p = new Prescription(nameOfPatient,test);
+               Prescription p = new Prescription(this.name,nameOfPatient);
                DataBase.prescriptionsList.add(p);
-               System.out.println("---------------test prescribed successfully--------------------");
+               for(String m : medicineName)
+               {
+                   if(DataBase.checkIfMedicineInDatabase(m))
+                   {
+                      p.addMedicine(DataBase.getMedicineFromDatabase(m));
+                   }
+                   else
+                   {
+                       System.out.println("medicine does not exist in database" +m);
+                   }
+               }
+               for(String t : testsId)
+               {
+                   if(DataBase.checkIfTestAvailableInHospital(t))
+                   {
+                       p.addTest(DataBase.getTestFromDatabase(t));
+                   }
+                   else
+                   {
+                       System.out.println("test does not exist in database" +t);
+                   }
+               }
                flag = 1;
-               break;
            }
        }
        if(flag == 0)
@@ -65,40 +83,39 @@ public class Doctor extends User {
 
    }
 
-   public void prescribeMedicines(String nameOfPatient,String arr[])
-   {
 
-          for(Prescription P : DataBase.prescriptionsList)
+
+   public void admitPatient(String name,String contactInfo)
+   {
+       if(DataBase.checkIfPatientInDatabase(name))
+       {
+           Patient newPat = DataBase.getPatientFromDatabase(name);
+           AdmittedPatient patient = new AdmittedPatient(newPat.getName(),newPat.getPatientAge(),newPat.getPatientInDate(),newPat.getPatientId(),this.name,contactInfo);
+           DataBase.admittedPatientList.add(patient);
+           int emptyRoom = DataBase.countEmptyRoom();
+               if(emptyRoom>0)
                {
-                   if(P.getNameOnPrescription().equals(nameOfPatient))
-                   {
-
-                       for(int i=0;i< arr.length;i++)
-                       {
-                           P.addMedicineToPrescription(arr[i]);
-
-                       }
+                   for(Room r : DataBase.roomList)
+                   {if(r.getEmpty()) {
+                       patient.setRoom(r);
+                       r.setEmpty(false);
+                       break;
                    }
-       }
-
-
-   }
-   public void getPrescribedMedicines(String patientName)
-   {
-       int flag = 0;
-       for(Prescription P : DataBase.prescriptionsList)
-       {
-           if(P.getNameOnPrescription().equals(patientName))
-           {
-              P.printTestAndPrescription();
-              flag = 1;
+                   }
+                   System.out.println("patient has been alloted room");
+                   System.out.println("remaining rooms are " +DataBase.countEmptyRoom());
+               }
+               else
+               { System.out.println("all rooms are filled");}
            }
+           else
+           { System.out.println("patient does not exist");}
+
        }
-       if(flag == 0)
-       {
-           System.out.println("prescription not found");
-       }
-   }
+
+
+
+
     public void login(String password)
     {
 

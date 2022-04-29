@@ -6,6 +6,24 @@ public class Patient extends User {
     private String patientInDate;
     private String patientId ;
 
+    public String getPatientAge() {
+        return patientAge;
+    }
+
+    public String getPatientInDate() {
+        return patientInDate;
+    }
+
+    public String getPatientId() {
+        return patientId;
+    }
+
+    public String getName()
+    {
+        return this.patientName;
+    }
+
+
 
     Patient(String name,String age,String date,String id)
     {
@@ -14,7 +32,8 @@ public class Patient extends User {
         this.patientInDate = date;
         this.patientId = id;
     }
-    public Patient(){}
+
+
 
     public void showInfo()
     {
@@ -24,10 +43,7 @@ public class Patient extends User {
         System.out.println("--------------------------------------------------------------------------------");
     }
 
-    public String getName()
-    {
-        return this.patientName;
-    }
+
 
 
     public void login(String name)
@@ -35,10 +51,6 @@ public class Patient extends User {
         if(DataBase.checkIfPatientInDatabase(name))
         {
             System.out.println("login successful");
-        }
-        else {
-            System.out.println("name does not exist");
-            System.exit(0);
         }
     }
 

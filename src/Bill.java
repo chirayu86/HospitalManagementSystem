@@ -18,9 +18,10 @@ public class Bill
         {
         for(Bill b : DataBase.billList) {
             if (patientName.equals(b.patientNameOnBill)) {
-                System.out.println("bill id is" + b.billId);
-                System.out.println("name on bill is" + b.patientNameOnBill);
-                System.out.println("amount of bill is" + b.amountOnBill);
+                System.out.println("-----------------------------------------------------------------------------");
+                System.out.printf("%10s %20s %5s", "BILL ID", "NAME", "AMOUNT");
+                System.out.println();
+                System.out.printf("%10s %20s %5s", b.billId,b.patientNameOnBill,b.amountOnBill);
                 flag = 1;
             }
         }
@@ -36,8 +37,4 @@ public class Bill
         }
     }
 
-    public String getNameOnBill()
-    {
-        return this.patientNameOnBill;
-    }
 }

@@ -1,41 +1,59 @@
 import java.util.ArrayList;
 
 public class Prescription {
+    private String doctorNameWhoPrescribed;
     private String nameOnPrescription;
-    private String testPrescribed;
-    private ArrayList<String> medicines = new ArrayList<String>();
 
-    Prescription(String name,String test)
+    //private String Symptoms;
+
+    private ArrayList<Test> testsPrescribed = new ArrayList<Test>();
+
+    private ArrayList<Medicine> medicines = new ArrayList<Medicine>();
+
+    Prescription(String docName,String name)
     {
+        this.doctorNameWhoPrescribed = docName;
         this.nameOnPrescription = name;
-        this.testPrescribed = test;
+
     }
 
-    public void addMedicineToPrescription(String meds)
+    public static void printTestAndPrescription(String patientName)
     {
-       this.medicines.add(meds);
-    }
-
-    public void printTestAndPrescription()
-    {
-        System.out.println("name on prescription is " +this.nameOnPrescription);
-        System.out.println("test prescribed to patient  " +this.testPrescribed);
-        System.out.println("medicines prescribed are: ");
-        try
+        for(Prescription p : DataBase.prescriptionsList)
         {
-            for (String meds : medicines) {
-                System.out.println(meds);
+            if(p.nameOnPrescription.equals(patientName))
+            {
+                System.out.println("the prescription for "+patientName);
+                System.out.println("the name of prescribing doctor is  " +p.doctorNameWhoPrescribed);
+                System.out.println("the test prescribed are");
+                for(Test t : p.testsPrescribed)
+                {
+                    t.showInfo();
+                    System.out.println();
+                }
+                System.out.println(" the medicine prescribed are");
+                for(Medicine m : p.medicines)
+                {
+                    m.showInfo();
+                    System.out.println();
+                }
+            }
+            else
+            {
+                System.out.println("prescription not found");
             }
         }
-        catch (NullPointerException e)
-        {
-            System.out.println("medicine list is empty");
-        }
+
 
     }
 
-    public String getNameOnPrescription()
+    public void addMedicine(Medicine m)
     {
-        return this.nameOnPrescription;
+        this.medicines.add(m);
     }
+    public void addTest(Test t)
+    {
+        this.testsPrescribed.add(t);
+    }
+   // public String getNameOnPrescription(){return this.nameOnPrescription;}
 }

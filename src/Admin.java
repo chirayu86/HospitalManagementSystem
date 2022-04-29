@@ -5,33 +5,27 @@ public class Admin extends User {
     {
         Bill bill = new Bill(id,patientName,amount);
         DataBase.billList.add(bill);
+        if(DataBase.checkIfPatientIsAdmitted(patientName)) {
+            AdmittedPatient patient = DataBase.getAdmittedPatientFromDataBase(patientName);
+            for (Room r : DataBase.roomList) {
+                if (patient.getRoom().getRoomNo() == r.getRoomNo()) {
+                    r.setEmpty(true);
+                }
+            }
+            DataBase.admittedPatientList.remove(patient);
+        }
         return bill;
-
     }
-    public Doctor addDoctor(String nAme,String dOcId,String dept,String spec) {
+    public void addDoctor(String nAme,String dOcId,String dept,String spec,String password) {
 
-        Doctor doctor = new Doctor(nAme, dOcId, dept, spec);
-        return doctor;
+        Doctor doctor = new Doctor(nAme, dOcId, dept, spec,password);
+        DataBase.addToListDoctor(doctor);
     }
-    public Patient addPatient(String nAme,String age,String dat,String id) {
+    public void addPatient(String nAme,String age,String dat,String id) {
         Patient patient = new Patient(nAme, age, dat, id);
-        return patient;
+        DataBase.addToListPatient(patient);
     }
 
-    public void listDoctors()
-    {
-        for(Doctor d : DataBase.doctors)
-        {
-            d.showInfoDoctor();
-        }
-    }
-    public void listPatients()
-    {
-        for(Patient p : DataBase.patients)
-        {
-            p.showInfo();
-        }
-    }
     public void login(String password)
     {
 
@@ -46,4 +40,7 @@ public class Admin extends User {
         }
 
     }
+
+
+
 }
